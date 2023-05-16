@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: keda-demo
+  name: keda-demo
+  namespace: default
+spec:
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: keda-demo
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: keda-demo
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port:   '80'
+    spec:
+      containers:
+      - image: docker.io/coolyupo/kedademo:20230516
+        imagePullPolicy: IfNotPresent
+        name: kedademo
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        resources: 
+          requests:
+            cpu: 50m
+            memory: 512M
+          limits:
+            cpu: 50m
+            memory: 512M
+          
